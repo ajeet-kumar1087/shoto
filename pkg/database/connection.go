@@ -12,7 +12,7 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDB() {
+func ConnectDB() *gorm.DB {
 	config.LoadEnv()
 
 	// Use net/url to construct the DSN
@@ -34,6 +34,5 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-
-	log.Println("Database connection established successfully")
+	return DB
 }
