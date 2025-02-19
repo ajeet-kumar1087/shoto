@@ -2,7 +2,7 @@ package database
 
 import (
 	"log"
-	"shoto/internal/user"
+	"shoto/app/user"
 )
 
 func RunMigrations() {
