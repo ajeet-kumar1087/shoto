@@ -13,7 +13,13 @@ func NewRepository(db *gorm.DB) Repository {
 
 // GetUser implements Repository.
 func (ur *userRepository) GetUser(id string) (*User, error) {
-	panic("unimplemented")
+	var user User
+	err := ur.db.First(&user, id)
+	if err.Error != nil {
+		return nil, err.Error
+	}
+	return &user, nil
+
 }
 
 // SaveUser implements Repository.
@@ -25,8 +31,11 @@ func (ur *userRepository) SaveUser(user *User) (*User, error) {
 }
 
 // Update implements Repository.
-func (ur *userRepository) UpdateUser(user *User) error {
-	panic("unimplemented")
+func (ur *userRepository) UpdateUser(user *User) (*User, error) {
+	if err := ur.db.Save(&user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 // Delete implements Repository.
