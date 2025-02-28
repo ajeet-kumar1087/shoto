@@ -1,36 +1,48 @@
 package user
 
-import "github.com/labstack/echo"
+import (
+	"net/http"
 
-type UserHandler struct {
-	Service UserService
+	"github.com/labstack/echo"
+)
+
+type handler struct {
+	service Service
 }
 
-func NewUserHandler(service UserService) *UserHandler {
-	return &UserHandler{Service: service}
+func NewHandler(s Service) Handler {
+	return &handler{s}
 }
 
-func (h *UserHandler) GetUser(c echo.Context) error {
+// CreateUser implements Handler.
+func (h *handler) CreateUser(c echo.Context) error {
+	var req CreateUserRequest
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+	u, err := h.service.CreateUser(req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	return c.JSON(http.StatusCreated, u)
+}
+
+// GetUser implements Handler.
+func (h *handler) GetUser(c echo.Context) error {
 	id := c.Param("id")
-	user, err := h.Service.GetUserByID(id)
+	user, err := h.service.GetUser(id)
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 	return c.JSON(200, user)
 }
 
-func (h *UserHandler) CreateUser(c echo.Context) error {
-
-	return c.String(200, "Create user")
-}
-func (h *UserHandler) UpdateUser(c echo.Context) error {
-	return c.String(200, "Update user")
+// DeleteUser implements Handler.
+func (h *handler) DeleteUser(c echo.Context) error {
+	panic("unimplemented")
 }
 
-func (h *UserHandler) DeleteUser(c echo.Context) error {
-	return c.String(200, "Delete user")
-}
-
-func (h *UserHandler) HealthCheck(c echo.Context) error {
-	return c.JSON(200, map[string]string{"status": "ok", "message": "User Health is okay okay ok"})
+// UpdateUser implements Handler.
+func (h *handler) UpdateUser(c echo.Context) error {
+	panic("unimplemented")
 }

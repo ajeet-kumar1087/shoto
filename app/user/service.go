@@ -6,24 +6,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type userService struct {
-	Repo UserRepository
+type service struct {
+	repo Repository
 }
 
-type UserService interface {
-	GetUserByID(id string) (*User, error)
-	CreateUser(req CreateUserRequest) (*User, error)
+func NewService(repo Repository) Service {
+	return &service{repo}
 }
 
-func NewUserService(repo UserRepository) UserService {
-	return &userService{Repo: repo}
-}
-
-func (s *userService) GetUserByID(id string) (*User, error) {
-	return s.Repo.FindByID(id)
-}
-
-func (s *userService) CreateUser(req CreateUserRequest) (*User, error) {
+// CreateUser implements Service.
+func (s *service) CreateUser(req CreateUserRequest) (*User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, errors.New("failed to hash password")
@@ -32,5 +24,20 @@ func (s *userService) CreateUser(req CreateUserRequest) (*User, error) {
 		Email:    req.Email,
 		Password: string(hashedPassword),
 	}
-	return s.Repo.SaveUser(user)
+	return user, s.repo.SaveUser(user)
+}
+
+// DeleteUser implements Service.
+func (s *service) DeleteUser(id string) error {
+	panic("unimplemented")
+}
+
+// GetUser implements Service.
+func (s *service) GetUser(id string) (*User, error) {
+	panic("unimplemented")
+}
+
+// UpdateUser implements Service.
+func (s *service) UpdateUser(id string, user *User) error {
+	panic("unimplemented")
 }
